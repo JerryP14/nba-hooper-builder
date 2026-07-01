@@ -3,140 +3,63 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Build a Hooper</title>
+    <title>NBA Stat Challenge</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <main class="app-shell">
-      <section class="builder-panel" aria-label="Player builder controls">
-        <div class="brand-row">
-          <div>
-            <p class="eyebrow">2025-26 NBA Stat Builder</p>
-            <h1>Build a Hooper</h1>
-          </div>
-          <div class="mini-ball" aria-hidden="true"></div>
+    <main class="game-shell">
+      <section class="hero-panel">
+        <p class="eyebrow">2025-26 NBA Stat Challenge</p>
+        <h1>Spin a team and pick the best stat-based player</h1>
+        <p class="hero-copy">
+          Spin the wheel to reveal a team, then assign one player to each stat category.
+          Every pick is graded A through F based on how that player's season stat ranks against the full stat pool.
+        </p>
+        <div class="pill-row">
+          <span class="pill">Stat-only categories</span>
+          <span class="pill">Spin team wheel</span>
+          <span class="pill">A–F grading</span>
         </div>
-
-        <section class="control-section" aria-labelledby="position-title">
-          <div class="section-heading">
-            <h2 id="position-title">Position</h2>
-            <output id="positionOutput">Point Guard</output>
-          </div>
-          <div class="segmented" role="radiogroup" aria-label="Position">
-            <button class="position-option active" type="button" data-position="PG" aria-pressed="true">PG</button>
-            <button class="position-option" type="button" data-position="SG" aria-pressed="false">SG</button>
-            <button class="position-option" type="button" data-position="SF" aria-pressed="false">SF</button>
-            <button class="position-option" type="button" data-position="PF" aria-pressed="false">PF</button>
-            <button class="position-option" type="button" data-position="C" aria-pressed="false">C</button>
-          </div>
-        </section>
-
-        <section class="control-section" aria-labelledby="measurements-title">
-          <div class="section-heading">
-            <h2 id="measurements-title">Measurements</h2>
-            <output id="measurementsOutput">6'3", 190 lb, 6'7" wingspan</output>
-          </div>
-          <div class="slider-grid">
-            <label class="slider-control">
-              <span>Height</span>
-              <input id="height" type="range" min="68" max="87" value="75">
-            </label>
-            <label class="slider-control">
-              <span>Weight</span>
-              <input id="weight" type="range" min="160" max="290" value="190">
-            </label>
-            <label class="slider-control">
-              <span>Wingspan</span>
-              <input id="wingspan" type="range" min="70" max="94" value="79">
-            </label>
-          </div>
-        </section>
-
-        <section class="control-section" aria-labelledby="skills-title">
-          <div class="section-heading">
-            <h2 id="skills-title">Skill Priorities</h2>
-            <output id="skillOutput">Balanced guard</output>
-          </div>
-          <div class="slider-grid">
-            <label class="slider-control">
-              <span>Shooting</span>
-              <input id="shooting" type="range" min="0" max="100" value="78">
-            </label>
-            <label class="slider-control">
-              <span>Playmaking</span>
-              <input id="playmaking" type="range" min="0" max="100" value="82">
-            </label>
-            <label class="slider-control">
-              <span>Finishing</span>
-              <input id="finishing" type="range" min="0" max="100" value="68">
-            </label>
-            <label class="slider-control">
-              <span>Defense</span>
-              <input id="defense" type="range" min="0" max="100" value="64">
-            </label>
-          </div>
-        </section>
-
-        <section class="control-section" aria-labelledby="tools-title">
-          <div class="section-heading">
-            <h2 id="tools-title">Physical Tools</h2>
-            <output id="toolsOutput">Quick first step</output>
-          </div>
-          <div class="slider-grid">
-            <label class="slider-control">
-              <span>Speed</span>
-              <input id="speed" type="range" min="0" max="100" value="84">
-            </label>
-            <label class="slider-control">
-              <span>Strength</span>
-              <input id="strength" type="range" min="0" max="100" value="54">
-            </label>
-            <label class="slider-control">
-              <span>Vertical</span>
-              <input id="vertical" type="range" min="0" max="100" value="72">
-            </label>
-            <label class="slider-control">
-              <span>Stamina</span>
-              <input id="stamina" type="range" min="0" max="100" value="76">
-            </label>
-          </div>
-        </section>
       </section>
 
-      <section class="result-panel" aria-label="Generated player">
-        <div class="court-visual" aria-hidden="true">
-          <div class="paint"></div>
-          <div class="rim"></div>
-          <div class="arc"></div>
-          <div class="player-marker" id="playerMarker"></div>
+      <section class="wheel-panel">
+        <div class="wheel-card">
+          <div class="wheel" id="wheel">
+            <div class="wheel-center">
+              <span id="wheelText">SPIN</span>
+            </div>
+          </div>
+          <button id="spinButton" class="primary-button">Spin Team Wheel</button>
         </div>
 
-        <article class="player-card">
-          <div class="card-topline">
-            <p id="buildLabel">Stat-Based Lane</p>
-            <span id="overall">--</span>
-          </div>
-          <h2 id="playerName">2025-26 Stat Match</h2>
-          <p id="playerSummary">A creative lead guard with pull-up range, pace, and enough burst to bend a defense.</p>
+        <div class="team-card">
+          <p class="eyebrow">Current team</p>
+          <h2 id="teamName">No team selected</h2>
+          <p id="teamSummary">Spin the wheel to reveal a team and its roster.</p>
+        </div>
+      </section>
 
-          <div class="stat-strip">
-            <div>
-              <span id="cardHeight">6'3"</span>
-              <small>Height</small>
-            </div>
-            <div>
-              <span id="cardWeight">190</span>
-              <small>Weight</small>
-            </div>
-            <div>
-              <span id="cardWingspan">6'7"</span>
-              <small>Wingspan</small>
-            </div>
+      <section class="board-panel">
+        <div class="categories-card">
+          <div class="section-head">
+            <h2>Stat categories</h2>
+            <span id="progressText">0 / 6 complete</span>
           </div>
+          <div id="categoryList"></div>
+        </div>
 
-          <div class="ratings-list" id="ratingsList"></div>
-          <p class="source-note" id="sourceNote">Benchmarks use 2025-26 NBA season leaders updated April 11, 2026.</p>
-        </article>
+        <div class="roster-card">
+          <div class="section-head">
+            <h2 id="rosterTitle">Roster</h2>
+            <button id="resetButton" class="ghost-button">Reset game</button>
+          </div>
+          <div id="rosterGrid" class="roster-grid"></div>
+        </div>
+      </section>
+
+      <section class="results-panel">
+        <h2>Results</h2>
+        <div id="resultsList"></div>
       </section>
     </main>
 

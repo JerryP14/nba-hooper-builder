@@ -1,283 +1,258 @@
-const state = {
-  position: "PG",
-  height: 75,
-  weight: 190,
-  wingspan: 79,
-  shooting: 78,
-  playmaking: 82,
-  finishing: 68,
-  defense: 64,
-  speed: 84,
-  strength: 54,
-  vertical: 72,
-  stamina: 76
-};
+const categories = [
+  { key: "ppg", label: "Points per game", statLabel: "PPG", description: "Pick the scorer with the highest scoring average." },
+  { key: "rpg", label: "Rebounds per game", statLabel: "RPG", description: "Pick the rebounder with the strongest board average." },
+  { key: "apg", label: "Assists per game", statLabel: "APG", description: "Pick the playmaker with the most assists." },
+  { key: "spg", label: "Steals per game", statLabel: "SPG", description: "Pick the defender with the best steal rate." },
+  { key: "bpg", label: "Blocks per game", statLabel: "BPG", description: "Pick the rim protector with the strongest block average." },
+  { key: "fgPct", label: "Field goal %", statLabel: "FG%", description: "Pick the shooter with the best efficiency." }
+];
 
-const seasonBenchmarks = {
-  ppg: { value: 33.5, leader: "Luka Doncic", label: "PPG" },
-  rpg: { value: 12.9, leader: "Nikola Jokic", label: "RPG" },
-  apg: { value: 10.7, leader: "Nikola Jokic", label: "APG" },
-  spg: { value: 2.0, leader: "Ausar Thompson", label: "SPG" },
-  bpg: { value: 3.1, leader: "Victor Wembanyama", label: "BPG" },
-  mpg: { value: 38.0, leader: "Tyrese Maxey", label: "MPG" },
-  fgPct: { value: 68.2, leader: "Rudy Gobert", label: "FG%" },
-  ftPct: { value: 94.0, leader: "Cam Spencer", label: "FT%" },
-  threePct: { value: 47.8, leader: "Luke Kennard", label: "3P%" }
-};
-
-const statLanes = [
+const teams = [
   {
-    name: "High-Usage Scorer",
-    player: "Luka Doncic",
-    stats: { ppg: 33.5 },
-    profile: { scoring: 100, passing: 70, rebounding: 45, defense: 35, rimProtection: 10, efficiency: 65 }
+    name: "Boston Celtics",
+    summary: "A veteran core with strong rim protection and balanced scoring.",
+    players: [
+      { name: "Jayson Tatum", mpg: 34.1, ppg: 26.9, rpg: 8.1, apg: 4.1, spg: 1.0, bpg: 0.6, fgPct: 0.468, threePct: 0.347 },
+      { name: "Jaylen Brown", mpg: 33.6, ppg: 23.7, rpg: 5.8, apg: 3.5, spg: 1.1, bpg: 0.4, fgPct: 0.465, threePct: 0.336 },
+      { name: "Derrick White", mpg: 31.2, ppg: 15.2, rpg: 4.2, apg: 5.2, spg: 1.0, bpg: 0.8, fgPct: 0.451, threePct: 0.389 }
+    ]
   },
   {
-    name: "Offensive Hub",
-    player: "Nikola Jokic",
-    stats: { rpg: 12.9, apg: 10.7 },
-    profile: { scoring: 75, passing: 100, rebounding: 100, defense: 45, rimProtection: 35, efficiency: 82 }
+    name: "Los Angeles Lakers",
+    summary: "Star power and high-usage offense shape this roster.",
+    players: [
+      { name: "LeBron James", mpg: 37.5, ppg: 25.7, rpg: 7.3, apg: 8.3, spg: 1.0, bpg: 0.6, fgPct: 0.500, threePct: 0.410 },
+      { name: "Anthony Davis", mpg: 34.0, ppg: 24.7, rpg: 12.6, apg: 3.5, spg: 1.2, bpg: 2.3, fgPct: 0.563, threePct: 0.250 },
+      { name: "Austin Reaves", mpg: 31.4, ppg: 20.4, rpg: 4.8, apg: 5.3, spg: 0.8, bpg: 0.3, fgPct: 0.468, threePct: 0.389 }
+    ]
   },
   {
-    name: "Point-of-Attack Disruptor",
-    player: "Ausar Thompson",
-    stats: { spg: 2.0 },
-    profile: { scoring: 45, passing: 45, rebounding: 58, defense: 100, rimProtection: 34, efficiency: 45 }
+    name: "Denver Nuggets",
+    summary: "A playmaking-led roster with elite efficiency and size.",
+    players: [
+      { name: "Nikola Jokic", mpg: 39.0, ppg: 26.4, rpg: 12.4, apg: 9.0, spg: 1.3, bpg: 0.9, fgPct: 0.583, threePct: 0.368 },
+      { name: "Jamal Murray", mpg: 35.4, ppg: 22.5, rpg: 4.1, apg: 6.2, spg: 1.1, bpg: 0.3, fgPct: 0.469, threePct: 0.402 },
+      { name: "Aaron Gordon", mpg: 32.0, ppg: 14.8, rpg: 6.8, apg: 3.2, spg: 0.8, bpg: 0.6, fgPct: 0.514, threePct: 0.321 }
+    ]
   },
   {
-    name: "Rim Protector",
-    player: "Victor Wembanyama",
-    stats: { bpg: 3.1 },
-    profile: { scoring: 72, passing: 42, rebounding: 84, defense: 82, rimProtection: 100, efficiency: 58 }
+    name: "Milwaukee Bucks",
+    summary: "High-level scoring and rim pressure from the wing and the paint.",
+    players: [
+      { name: "Giannis Antetokounmpo", mpg: 35.4, ppg: 30.4, rpg: 11.5, apg: 6.5, spg: 1.2, bpg: 1.5, fgPct: 0.584, threePct: 0.278 },
+      { name: "Damian Lillard", mpg: 36.0, ppg: 24.3, rpg: 4.3, apg: 7.3, spg: 0.9, bpg: 0.2, fgPct: 0.444, threePct: 0.379 },
+      { name: "Khris Middleton", mpg: 29.4, ppg: 16.9, rpg: 5.1, apg: 4.5, spg: 0.9, bpg: 0.3, fgPct: 0.434, threePct: 0.365 }
+    ]
   },
   {
-    name: "Elite Spacer",
-    player: "Luke Kennard",
-    stats: { threePct: 47.8 },
-    profile: { scoring: 68, passing: 36, rebounding: 24, defense: 30, rimProtection: 5, efficiency: 100 }
+    name: "Golden State Warriors",
+    summary: "A shooting-heavy roster with quick playmakers and strong spacing.",
+    players: [
+      { name: "Stephen Curry", mpg: 34.5, ppg: 26.4, rpg: 4.5, apg: 6.1, spg: 0.8, bpg: 0.4, fgPct: 0.468, threePct: 0.427 },
+      { name: "Draymond Green", mpg: 31.1, ppg: 8.6, rpg: 7.2, apg: 6.8, spg: 1.5, bpg: 1.2, fgPct: 0.497, threePct: 0.320 },
+      { name: "Jonathan Kuminga", mpg: 26.0, ppg: 16.8, rpg: 4.9, apg: 2.3, spg: 0.7, bpg: 0.5, fgPct: 0.497, threePct: 0.345 }
+    ]
   },
   {
-    name: "Interior Efficiency Finisher",
-    player: "Rudy Gobert",
-    stats: { fgPct: 68.2 },
-    profile: { scoring: 55, passing: 20, rebounding: 84, defense: 76, rimProtection: 88, efficiency: 96 }
+    name: "New York Knicks",
+    summary: "A defensive-minded team that thrives on hustle and rebounding.",
+    players: [
+      { name: "Jalen Brunson", mpg: 35.4, ppg: 28.7, rpg: 3.6, apg: 6.7, spg: 1.1, bpg: 0.2, fgPct: 0.485, threePct: 0.382 },
+      { name: "Karl-Anthony Towns", mpg: 33.0, ppg: 22.9, rpg: 10.1, apg: 3.4, spg: 0.8, bpg: 1.1, fgPct: 0.529, threePct: 0.416 },
+      { name: "OG Anunoby", mpg: 34.0, ppg: 18.2, rpg: 5.5, apg: 2.7, spg: 1.8, bpg: 0.6, fgPct: 0.486, threePct: 0.383 }
+    ]
   },
   {
-    name: "Rookie All-Around Engine",
-    player: "Cooper Flagg",
-    stats: { ppg: 21.0, rpg: 6.7, apg: 4.5, spg: 1.2, bpg: 0.9, mpg: 33.5 },
-    profile: { scoring: 72, passing: 56, rebounding: 62, defense: 64, rimProtection: 44, efficiency: 62 }
+    name: "Miami Heat",
+    summary: "A team defined by defense, pressure, and smart shot-making.",
+    players: [
+      { name: "Jimmy Butler", mpg: 32.8, ppg: 20.8, rpg: 5.3, apg: 5.0, spg: 1.7, bpg: 0.6, fgPct: 0.486, threePct: 0.354 },
+      { name: "Tyler Herro", mpg: 33.6, ppg: 25.9, rpg: 5.2, apg: 4.8, spg: 1.0, bpg: 0.3, fgPct: 0.454, threePct: 0.390 },
+      { name: "Bam Adebayo", mpg: 34.5, ppg: 19.3, rpg: 10.4, apg: 4.1, spg: 1.1, bpg: 1.2, fgPct: 0.528, threePct: 0.200 }
+    ]
+  },
+  {
+    name: "Phoenix Suns",
+    summary: "A fast, high-volume scoring team with deep shooting.",
+    players: [
+      { name: "Kevin Durant", mpg: 37.6, ppg: 27.1, rpg: 6.8, apg: 5.0, spg: 1.2, bpg: 1.2, fgPct: 0.562, threePct: 0.413 },
+      { name: "Devin Booker", mpg: 36.8, ppg: 27.1, rpg: 4.1, apg: 7.1, spg: 1.1, bpg: 0.3, fgPct: 0.465, threePct: 0.363 },
+      { name: "Brandon Miller", mpg: 24.0, ppg: 17.3, rpg: 4.4, apg: 2.0, spg: 0.7, bpg: 0.4, fgPct: 0.463, threePct: 0.398 }
+    ]
   }
 ];
 
-const positionNames = {
-  PG: "Point Guard",
-  SG: "Shooting Guard",
-  SF: "Small Forward",
-  PF: "Power Forward",
-  C: "Center"
+const filteredTeams = teams.map((team) => ({ ...team, players: team.players.filter((player) => player.mpg > 10) }));
+const allPlayers = filteredTeams.flatMap((team) => team.players.map((player) => ({ ...player, team: team.name })));
+const state = {
+  selectedTeam: null,
+  activeCategory: categories[0].key,
+  selections: {},
+  spinRotation: 0
 };
 
-const ranges = {
-  height: document.querySelector("#height"),
-  weight: document.querySelector("#weight"),
-  wingspan: document.querySelector("#wingspan"),
-  shooting: document.querySelector("#shooting"),
-  playmaking: document.querySelector("#playmaking"),
-  finishing: document.querySelector("#finishing"),
-  defense: document.querySelector("#defense"),
-  speed: document.querySelector("#speed"),
-  strength: document.querySelector("#strength"),
-  vertical: document.querySelector("#vertical"),
-  stamina: document.querySelector("#stamina")
-};
+const wheel = document.querySelector("#wheel");
+const wheelText = document.querySelector("#wheelText");
+const spinButton = document.querySelector("#spinButton");
+const resetButton = document.querySelector("#resetButton");
+const teamName = document.querySelector("#teamName");
+const teamSummary = document.querySelector("#teamSummary");
+const categoryList = document.querySelector("#categoryList");
+const rosterGrid = document.querySelector("#rosterGrid");
+const rosterTitle = document.querySelector("#rosterTitle");
+const progressText = document.querySelector("#progressText");
+const resultsList = document.querySelector("#resultsList");
 
-const outputs = {
-  position: document.querySelector("#positionOutput"),
-  measurements: document.querySelector("#measurementsOutput"),
-  skill: document.querySelector("#skillOutput"),
-  tools: document.querySelector("#toolsOutput"),
-  build: document.querySelector("#buildLabel"),
-  overall: document.querySelector("#overall"),
-  name: document.querySelector("#playerName"),
-  summary: document.querySelector("#playerSummary"),
-  cardHeight: document.querySelector("#cardHeight"),
-  cardWeight: document.querySelector("#cardWeight"),
-  cardWingspan: document.querySelector("#cardWingspan"),
-  ratings: document.querySelector("#ratingsList"),
-  marker: document.querySelector("#playerMarker")
-};
-
-function inchesToFeet(value) {
-  const feet = Math.floor(value / 12);
-  const inches = value % 12;
-  return `${feet}'${inches}"`;
+function formatPlayerStat(player) {
+  return `${player.mpg.toFixed(1)} MPG • ${player.ppg} PPG • ${player.rpg} RPG • ${player.apg} APG • ${player.spg} SPG • ${player.bpg} BPG • ${Math.round(player.fgPct * 100)}% FG`;
 }
 
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
+function getGradeForPlayer(categoryKey, player) {
+  const ranked = [...allPlayers].sort((a, b) => b[categoryKey] - a[categoryKey]);
+  const index = ranked.findIndex((entry) => entry.name === player.name && entry.team === player.team);
+  const percentile = (index + 1) / ranked.length;
+
+  if (percentile <= 0.1) return "A";
+  if (percentile <= 0.25) return "B";
+  if (percentile <= 0.5) return "C";
+  if (percentile <= 0.75) return "D";
+  return "F";
 }
 
-function getTopKey(keys) {
-  return keys.reduce((best, key) => (state[key] > state[best] ? key : best), keys[0]);
+function getGradeValue(grade) {
+  return { A: 5, B: 4, C: 3, D: 2, F: 1 }[grade] || 0;
 }
 
-function roundStat(value, decimals = 1) {
-  return Number(value.toFixed(decimals));
+function getOverallGrade(grades) {
+  const average = grades.reduce((sum, grade) => sum + getGradeValue(grade), 0) / grades.length;
+  if (average >= 4.5) return "A";
+  if (average >= 3.5) return "B";
+  if (average >= 2.5) return "C";
+  if (average >= 1.5) return "D";
+  return "F";
 }
 
-function getToolProfile() {
-  const length = clamp((state.wingspan - state.height + 3) / 10, 0, 1);
-  const size = clamp((state.height - 68) / 19, 0, 1);
-  const mass = clamp((state.weight - 160) / 130, 0, 1);
+function renderCategories() {
+  categoryList.className = "category-list";
+  categoryList.innerHTML = "";
 
-  return {
-    scoring: clamp(state.shooting * 0.55 + state.finishing * 0.3 + state.speed * 0.15, 0, 100),
-    passing: clamp(state.playmaking * 0.86 + state.stamina * 0.14, 0, 100),
-    rebounding: clamp(state.strength * 0.3 + state.vertical * 0.22 + size * 28 + mass * 20, 0, 100),
-    defense: clamp(state.defense * 0.72 + state.speed * 0.12 + length * 16, 0, 100),
-    rimProtection: clamp(state.defense * 0.32 + state.vertical * 0.2 + size * 30 + length * 18, 0, 100),
-    efficiency: clamp(state.shooting * 0.42 + state.finishing * 0.24 + state.playmaking * 0.12 + state.stamina * 0.22, 0, 100)
-  };
-}
-
-function getStatProjection(profile) {
-  const guardBoost = ["PG", "SG"].includes(state.position) ? 1.08 : 0.92;
-  const bigBoost = ["PF", "C"].includes(state.position) ? 1.1 : 0.9;
-  const minutesShare = clamp((state.stamina * 0.62 + profile.scoring * 0.2 + profile.defense * 0.18) / 100, 0.35, 0.98);
-
-  return {
-    ppg: roundStat(seasonBenchmarks.ppg.value * clamp(profile.scoring / 100, 0.08, 0.98)),
-    apg: roundStat(seasonBenchmarks.apg.value * clamp((profile.passing / 100) * guardBoost, 0.05, 0.98)),
-    rpg: roundStat(seasonBenchmarks.rpg.value * clamp((profile.rebounding / 100) * bigBoost, 0.06, 0.98)),
-    spg: roundStat(seasonBenchmarks.spg.value * clamp(profile.defense / 100, 0.05, 0.98)),
-    bpg: roundStat(seasonBenchmarks.bpg.value * clamp(profile.rimProtection / 100, 0.02, 0.98)),
-    mpg: roundStat(seasonBenchmarks.mpg.value * minutesShare),
-    fgPct: roundStat(seasonBenchmarks.fgPct.value * clamp((state.finishing * 0.52 + state.strength * 0.18 + profile.efficiency * 0.3) / 100, 0.35, 0.94)),
-    ftPct: roundStat(seasonBenchmarks.ftPct.value * clamp((state.shooting * 0.58 + state.stamina * 0.22 + state.playmaking * 0.2) / 100, 0.45, 0.98)),
-    threePct: roundStat(seasonBenchmarks.threePct.value * clamp((state.shooting * 0.82 + state.playmaking * 0.08 + state.stamina * 0.1) / 100, 0.18, 0.98))
-  };
-}
-
-function getClosestLane(profile) {
-  return statLanes
-    .map((lane) => {
-      const distance = Object.keys(profile).reduce((total, key) => {
-        return total + Math.abs(profile[key] - lane.profile[key]);
-      }, 0);
-      return { ...lane, similarity: Math.round(clamp(100 - distance / 6, 0, 99)) };
-    })
-    .sort((a, b) => b.similarity - a.similarity)[0];
-}
-
-function getSkillLabel() {
-  const topSkill = getTopKey(["shooting", "playmaking", "finishing", "defense"]);
-  const labels = {
-    shooting: `3P% chase: ${seasonBenchmarks.threePct.leader}`,
-    playmaking: `APG chase: ${seasonBenchmarks.apg.leader}`,
-    finishing: `FG% chase: ${seasonBenchmarks.fgPct.leader}`,
-    defense: `STL/BLK chase`
-  };
-
-  return labels[topSkill];
-}
-
-function getToolsLabel() {
-  const topTool = getTopKey(["speed", "strength", "vertical", "stamina"]);
-  const labels = {
-    speed: "Speed pushes steals and pace",
-    strength: "Strength pushes boards and FG%",
-    vertical: "Vertical pushes blocks and rim stats",
-    stamina: `Stamina pushes toward ${seasonBenchmarks.mpg.leader} minutes`
-  };
-
-  return labels[topTool];
-}
-
-function getSummary(lane, stats) {
-  const shownStats = Object.entries(lane.stats)
-    .map(([key, value]) => `${value} ${seasonBenchmarks[key].label}`)
-    .join(", ");
-
-  return `Your ${positionNames[state.position].toLowerCase()} maps closest to the 2025-26 ${lane.name.toLowerCase()} lane, led by ${lane.player}${shownStats ? ` (${shownStats})` : ""}. Projected line: ${stats.ppg} PPG, ${stats.rpg} RPG, ${stats.apg} APG, ${stats.spg} SPG, ${stats.bpg} BPG.`;
-}
-
-function getRatings(stats) {
-  return [
-    ["Points", stats.ppg, seasonBenchmarks.ppg.value, "PPG"],
-    ["Rebounds", stats.rpg, seasonBenchmarks.rpg.value, "RPG"],
-    ["Assists", stats.apg, seasonBenchmarks.apg.value, "APG"],
-    ["Steals", stats.spg, seasonBenchmarks.spg.value, "SPG"],
-    ["Blocks", stats.bpg, seasonBenchmarks.bpg.value, "BPG"],
-    ["Three-Point", stats.threePct, seasonBenchmarks.threePct.value, "3P%"],
-    ["Minutes", stats.mpg, seasonBenchmarks.mpg.value, "MPG"]
-  ];
-}
-
-function updateMarker() {
-  const x = 22 + state.shooting * 0.46;
-  const y = 18 + ((state.finishing + state.vertical) / 2) * 0.45;
-  const scale = 0.86 + state.strength / 360 + (state.height - 68) / 180;
-
-  outputs.marker.style.left = `${clamp(x, 20, 78)}%`;
-  outputs.marker.style.bottom = `${clamp(y, 20, 62)}%`;
-  outputs.marker.style.transform = `translate(-50%, 50%) scale(${clamp(scale, 0.9, 1.22)})`;
-}
-
-function renderRatings(stats) {
-  outputs.ratings.innerHTML = "";
-
-  getRatings(stats).forEach(([label, value, leaderValue, unit]) => {
-    const percentage = Math.round(clamp((value / leaderValue) * 100, 0, 100));
-    const row = document.createElement("div");
-    row.className = "rating-row";
-    row.innerHTML = `
-      <strong>${label}</strong>
-      <div class="rating-meter" aria-hidden="true"><i style="--rating: ${percentage}%"></i></div>
-      <span>${value} ${unit}</span>
+  categories.forEach((category) => {
+    const selectedPlayer = state.selections[category.key];
+    const grade = selectedPlayer ? getGradeForPlayer(category.key, selectedPlayer) : null;
+    const card = document.createElement("div");
+    card.className = `category-card${state.activeCategory === category.key ? " active" : ""}`;
+    card.innerHTML = `
+      <div class="category-top">
+        <button type="button" data-category="${category.key}">${category.label}</button>
+        <span>${selectedPlayer ? grade : "—"}</span>
+      </div>
+      <div class="category-meta">${category.description}</div>
+      <div class="category-result">${selectedPlayer ? `${selectedPlayer.name} • ${selectedPlayer[category.key]} ${category.statLabel}` : "Pick a player from the roster for this category."}</div>
     `;
-    outputs.ratings.append(row);
+    card.querySelector("button").addEventListener("click", () => {
+      state.activeCategory = category.key;
+      render();
+    });
+    categoryList.appendChild(card);
   });
+}
+
+function renderRoster() {
+  if (!state.selectedTeam) {
+    rosterGrid.innerHTML = '<p class="muted">Spin the wheel first to unlock the roster.</p>';
+    rosterTitle.textContent = "Roster";
+    return;
+  }
+
+  rosterTitle.textContent = `${state.selectedTeam.name} roster`;
+  rosterGrid.innerHTML = "";
+
+  state.selectedTeam.players.forEach((player) => {
+    const button = document.createElement("button");
+    button.className = "player-choice";
+    button.innerHTML = `<strong>${player.name}</strong><small>${formatPlayerStat(player)}</small>`;
+    button.addEventListener("click", () => {
+      state.selections[state.activeCategory] = player;
+      render();
+    });
+    rosterGrid.appendChild(button);
+  });
+}
+
+function renderResults() {
+  const completed = categories.filter((category) => state.selections[category.key]);
+  const grades = completed.map((category) => getGradeForPlayer(category.key, state.selections[category.key]));
+  progressText.textContent = `${completed.length} / ${categories.length} complete`;
+
+  if (!completed.length) {
+    resultsList.innerHTML = '<div class="result-row">Spin a team and choose one player for each stat category.</div>';
+    return;
+  }
+
+  resultsList.innerHTML = "";
+  completed.forEach((category) => {
+    const player = state.selections[category.key];
+    const grade = getGradeForPlayer(category.key, player);
+    const row = document.createElement("div");
+    row.className = "result-row";
+    row.innerHTML = `
+      <div>
+        <strong>${category.label}</strong><br>
+        <span>${player.name} • ${player[category.key]} ${category.statLabel}</span>
+      </div>
+      <span class="result-grade">${grade}</span>
+    `;
+    resultsList.appendChild(row);
+  });
+
+  if (completed.length === categories.length) {
+    const overall = document.createElement("div");
+    overall.className = "result-row";
+    overall.innerHTML = `
+      <div><strong>Overall challenge grade</strong><br><span>You completed every stat category.</span></div>
+      <span class="result-grade">${getOverallGrade(grades)}</span>
+    `;
+    resultsList.appendChild(overall);
+  }
 }
 
 function render() {
-  const profile = getToolProfile();
-  const stats = getStatProjection(profile);
-  const lane = getClosestLane(profile);
+  if (!state.selectedTeam) {
+    teamName.textContent = "No team selected";
+    teamSummary.textContent = "Spin the wheel to reveal a team and its roster.";
+  } else {
+    teamName.textContent = state.selectedTeam.name;
+    teamSummary.textContent = state.selectedTeam.summary;
+  }
 
-  outputs.position.textContent = positionNames[state.position];
-  outputs.measurements.textContent = `${inchesToFeet(state.height)}, ${state.weight} lb, ${inchesToFeet(state.wingspan)} wingspan`;
-  outputs.skill.textContent = getSkillLabel();
-  outputs.tools.textContent = getToolsLabel();
-  outputs.build.textContent = lane.name;
-  outputs.overall.textContent = `${lane.similarity}%`;
-  outputs.name.textContent = `${lane.player} Lane`;
-  outputs.summary.textContent = getSummary(lane, stats);
-  outputs.cardHeight.textContent = inchesToFeet(state.height);
-  outputs.cardWeight.textContent = state.weight;
-  outputs.cardWingspan.textContent = inchesToFeet(state.wingspan);
-
-  renderRatings(stats);
-  updateMarker();
+  renderCategories();
+  renderRoster();
+  renderResults();
 }
 
-document.querySelectorAll(".position-option").forEach((button) => {
-  button.addEventListener("click", () => {
-    state.position = button.dataset.position;
-    document.querySelectorAll(".position-option").forEach((option) => {
-      const active = option === button;
-      option.classList.toggle("active", active);
-      option.setAttribute("aria-pressed", active);
-    });
-    render();
-  });
-});
+function spinWheel() {
+  const randomIndex = Math.floor(Math.random() * teams.length);
+  const nextTeam = teams[randomIndex];
+  const rotation = 360 * 5 + randomIndex * (360 / teams.length) + 18;
+  state.spinRotation += rotation;
+  wheel.style.transform = `rotate(${state.spinRotation}deg)`;
+  wheelText.textContent = "...";
 
-Object.entries(ranges).forEach(([key, input]) => {
-  input.addEventListener("input", () => {
-    state[key] = Number(input.value);
+  setTimeout(() => {
+    state.selectedTeam = nextTeam;
+    state.activeCategory = categories[0].key;
+    wheelText.textContent = nextTeam.name;
     render();
-  });
+  }, 4000);
+}
+
+spinButton.addEventListener("click", spinWheel);
+resetButton.addEventListener("click", () => {
+  state.selectedTeam = null;
+  state.activeCategory = categories[0].key;
+  state.selections = {};
+  wheelText.textContent = "SPIN";
+  render();
 });
 
 render();
